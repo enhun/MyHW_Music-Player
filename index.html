@@ -6,6 +6,7 @@
     <title>音樂播放器</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -47,16 +48,16 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="controls-container d-flex justify-content-center flex-wrap gap-2">
-                <span class="control-btn" onclick="playMusic()">4</span>
-                <span class="control-btn" onclick="stopMusic()">&lt;</span>
-                <span class="control-btn" onclick="changeMusic(-1)">9</span>
-                <span class="control-btn" onclick="changeTime(-10)">7</span>
-                <span class="control-btn" onclick="changeTime(10)">8</span>
-                <span class="control-btn" onclick="changeMusic(1)">:</span>
-                <span class="control-btn" id="muteBtn" onclick="setMute()">V</span>
-                <span class="control-btn" id="loopBtn" onclick="toggleLoop()">q</span>
-                <span class="control-btn" id="randomBtn" onclick="toggleRandom()">s</span>
-                <span class="control-btn" id="repeatAllBtn" onclick="toggleRepeatAll()">`</span>
+                <span class="control-btn" onclick="playMusic()"><i class="fas fa-play"></i></span>
+                <span class="control-btn" onclick="stopMusic()"><i class="fas fa-stop"></i></span>
+                <span class="control-btn" onclick="changeMusic(-1)"><i class="fas fa-backward"></i></span>
+                <span class="control-btn" onclick="changeTime(-10)"><i class="fas fa-undo-alt"></i></span>
+                <span class="control-btn" onclick="changeTime(10)"><i class="fas fa-redo-alt"></i></span>
+                <span class="control-btn" onclick="changeMusic(1)"><i class="fas fa-forward"></i></span>
+                <span class="control-btn" id="muteBtn" onclick="setMute()"><i class="fas fa-volume-up"></i></span>
+                <span class="control-btn" id="loopBtn" onclick="toggleLoop()"><i class="fas fa-sync"></i></span>
+                <span class="control-btn" id="randomBtn" onclick="toggleRandom()"><i class="fas fa-random"></i></span>
+                <span class="control-btn" id="repeatAllBtn" onclick="toggleRepeatAll()"><i class="fas fa-redo"></i></span>
             </div>
         </div>
     </div>
