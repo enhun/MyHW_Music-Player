@@ -300,10 +300,8 @@ function setMute() {
     audio.muted = !audio.muted;
     if (audio.muted) {
         txtVol.value = "靜音";
-        btnMuted.innerHTML = '<i class="fas fa-volume-mute"></i>'; 
         btnMuted.classList.add('muted');
     } else {
-        btnMuted.innerHTML = '<i class="fas fa-volume-up"></i>'; 
         btnMuted.classList.remove('muted');
         setVolumeByRangeBar();
     }
@@ -397,7 +395,7 @@ function stopMusic() {
 
 function pauseMusic() {
     audio.pause();
-    btnPlay.innerHTML = '<i class="fas fa-play"></i>';
+    btnPlay.innerText = "4";
     btnPlay.onclick = playMusic;
     document.getElementById('statusInfo').innerText = "音樂暫停中...";
     if (timeUpdateInterval) {
@@ -499,7 +497,7 @@ function playMusic() {
         // 直接播放，不需要重新載入
         audio.play()
             .then(() => {
-                btnPlay.innerHTML = '<i class="fas fa-pause"></i>'; 
+                btnPlay.innerText = ";";
                 btnPlay.onclick = pauseMusic;
                 document.getElementById('statusInfo').innerText = "正在播放 " + audio.title + " 歌曲中...";
                 
@@ -519,7 +517,7 @@ function playMusic() {
             .catch(error => {
                 console.error('播放失敗:', error);
                 document.getElementById('statusInfo').innerText = "播放失敗，請確認音樂檔案路徑是否正確";
-                btnPlay.innerHTML = '<i class="fas fa-play"></i>'; 
+                btnPlay.innerText = "4";
                 btnPlay.onclick = playMusic;
             });
 

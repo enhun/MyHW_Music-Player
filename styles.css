@@ -104,6 +104,7 @@ body {
 }
 /* 控制按鈕的基本樣式 */
 .control-btn {
+    font-family: 'Webdings';  /* 使用 Webdings 字體來顯示播放器符號 */
     width: 44px;
     height: 44px;
     background-color: #f8f9fa;
@@ -113,13 +114,9 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    font-size: 20px;
     margin: 2px;
     transition: all 0.2s ease;
-}
-
-.control-btn i {
-    font-size: 18px;
-    color: #333;
 }
 
 
@@ -502,13 +499,4 @@ visibility: hidden;
     .flower-slider::-moz-range-thumb {
         margin-top: -15px; /* 根据需要调整 */
     }
-}
-
-
-#controlPanel span.active i {
-    color: #fff;  /* 當按鈕啟用時的圖示顏色 */
-}
-
-#controlPanel span.muted i {
-    color: #fff;  /* 靜音時的圖示顏色 */
 }
