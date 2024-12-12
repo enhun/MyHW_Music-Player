@@ -393,15 +393,20 @@ function stopMusic() {
     }
 }
 
+
 function pauseMusic() {
-    audio.pause();
-    btnPlay.innerText = "4";
-    btnPlay.onclick = playMusic;
-    document.getElementById('statusInfo').innerText = "音樂暫停中...";
-    if (timeUpdateInterval) {
-        clearInterval(timeUpdateInterval);
+    try {
+        audio.pause();
+        btnPlay.innerHTML = '<i class="fas fa-play"></i>';
+        document.getElementById('statusInfo').innerText = "音樂暫停中...";
+        if (timeUpdateInterval) {
+            clearInterval(timeUpdateInterval);
+        }
+        savePlaybackState();
+    } catch (error) {
+        console.error('暫停失敗:', error);
+        document.getElementById('statusInfo').innerText = "暫停失敗，請重試";
     }
-    savePlaybackState();
 }
 
 function loadPlaybackState() {
@@ -414,127 +419,114 @@ function loadPlaybackState() {
 }
 
 
+// 修改切換音樂的函數
 function changeMusic(n) {
-    if (!audio.paused) {
-        stopMusic();
-    }
+    const playingBeforeChange = !audio.paused;
+    
+    // 停止當前播放
+    stopMusic();
+    
     const currentIndex = musicList.selectedIndex;
     const newIndex = currentIndex + n;
 
     if (newIndex >= 0 && newIndex < musicList.options.length) {
         musicList.selectedIndex = newIndex;
         const selectedOption = musicList.options[newIndex];
-
-        // 檢查音樂檔案路徑
-        const audioPath = selectedOption.value;
-        console.log('嘗試載入音樂:', audioPath); // 加入除錯訊息
-
+        
         // 更新音源和標題
-        audio.src = audioPath;
+        audio.src = selectedOption.value;
         audio.title = selectedOption.text;
         
         // 更新狀態顯示
         document.getElementById('statusInfo').innerText = "正在載入 " + selectedOption.text;
-        
-        // 更新播放按鈕
-        btnPlay.innerText = ";";
-        btnPlay.onclick = pauseMusic;
 
-        // 重要：等待音頻加載完成
+        // 等待音頻加載完成
         audio.load();
-
-        // 監聽載入錯誤
-        audio.onerror = function(e) {
-            console.error('音頻載入失敗:', e);
-            document.getElementById('statusInfo').innerText = 
-                `無法載入音樂檔案: ${audioPath}，請確認檔案是否存在`;
-            btnPlay.innerText = "4";
-            btnPlay.onclick = playMusic;
-        };
-
-        audio.oncanplaythrough = function() {
-            audio.play()
-                .then(() => {
-                    document.getElementById('statusInfo').innerText = 
-                        "正在播放 " + selectedOption.text;
-                    getMusicTime();
-                    savePlaybackState();
-                })
-                .catch(error => {
-                    console.error('播放失敗:', error);
-                    document.getElementById('statusInfo').innerText = 
-                        "播放失敗，請重試";
-                    btnPlay.innerText = "4";
-                    btnPlay.onclick = playMusic;
-                });
-        };
+        
+        // 如果之前正在播放，則繼續播放新的音樂
+        if (playingBeforeChange) {
+            audio.addEventListener('canplay', () => {
+                playMusic();
+            }, { once: true });
+        }
     }
 }
 
 function playMusic() {
-    // 如果音樂正在播放，不需要做任何事情
+    // 防止重複觸發
     if (!audio.paused) {
+        pauseMusic(); // 如果音樂正在播放，就暫停
         return;
     }
 
+    // 添加錯誤處理和狀態提示
+    const handlePlayError = (error) => {
+        console.error('播放失敗:', error);
+        document.getElementById('statusInfo').innerText = "播放失敗，請重試";
+        btnPlay.innerHTML = '<i class="fas fa-play"></i>';
+        btnPlay.onclick = playMusic;
+    };
+
     try {
-        const savedState = loadPlaybackState();
+        // 先更新 UI
+        btnPlay.innerHTML = '<i class="fas fa-pause"></i>';
+        document.getElementById('statusInfo').innerText = "正在準備播放...";
 
-        if (savedState && savedState.currentSong) {
-            // 檢查當前音源是否不同
-            if (audio.src !== savedState.currentSong) {
-                audio.src = savedState.currentSong;
-                audio.title = savedState.songTitle;
-                musicList.selectedIndex = savedState.selectedIndex;
-            }
-
-            // 只在音樂完全停止時才設置播放位置
-            if (audio.paused && audio.currentTime === 0 && !isNaN(savedState.currentTime)) {
-                audio.currentTime = savedState.currentTime;
-            }
+        // 確保音頻已經加載
+        if (audio.readyState >= 2) {
+            // 音頻已經可以播放
+            startPlayback();
+        } else {
+            // 等待音頻加載
+            audio.addEventListener('canplay', startPlayback, { once: true });
+            // 設置加載超時
+            setTimeout(() => {
+                if (audio.paused) {
+                    handlePlayError(new Error('加載超時'));
+                }
+            }, 5000);
         }
+    } catch (error) {
+        handlePlayError(error);
+    }
+}
 
-        // 直接播放，不需要重新載入
-        audio.play()
+// 將實際播放邏輯抽離出來
+function startPlayback() {
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+        playPromise
             .then(() => {
-                btnPlay.innerText = ";";
-                btnPlay.onclick = pauseMusic;
-                document.getElementById('statusInfo').innerText = "正在播放 " + audio.title + " 歌曲中...";
-                
-                // 更新進度和時間顯示
+                document.getElementById('statusInfo').innerText = 
+                    "正在播放 " + (audio.title || '音樂');
                 updateProgress();
                 getMusicTime();
-                
-                // 設置更新計時器
-                if (timeUpdateInterval) {
-                    clearInterval(timeUpdateInterval);
-                }
-                timeUpdateInterval = setInterval(() => {
-                    updateProgress();
-                    getMusicTime();
-                }, 1000);
+                // 確保按鈕點擊事件綁定正確
+                btnPlay.onclick = pauseMusic;
             })
             .catch(error => {
-                console.error('播放失敗:', error);
-                document.getElementById('statusInfo').innerText = "播放失敗，請確認音樂檔案路徑是否正確";
-                btnPlay.innerText = "4";
+                // 特別處理用戶互動要求
+                if (error.name === 'NotAllowedError') {
+                    document.getElementById('statusInfo').innerText = 
+                        "請點擊播放按鈕開始播放";
+                } else {
+                    console.error('播放出錯:', error);
+                    document.getElementById('statusInfo').innerText = 
+                        "播放失敗，請重試";
+                }
+                btnPlay.innerHTML = '<i class="fas fa-play"></i>';
                 btnPlay.onclick = playMusic;
             });
-
-        // 添加錯誤處理
-        audio.onerror = function() {
-            console.error('音頻載入失敗');
-            document.getElementById('statusInfo').innerText = "無法載入音樂檔案，請確認檔案是否存在";
-            btnPlay.innerText = "4";
-            btnPlay.onclick = playMusic;
-        };
-
-    } catch (error) {
-        console.error('播放過程發生錯誤:', error);
-        document.getElementById('statusInfo').innerText = "播放發生錯誤，請重試";
-        btnPlay.innerText = "4";
-        btnPlay.onclick = playMusic;
     }
+}
+// 在適當的地方顯示/隱藏加載提示
+function showLoading() {
+    document.getElementById('loadingIndicator').style.display = 'block';
+}
+
+function hideLoading() {
+    document.getElementById('loadingIndicator').style.display = 'none';
 }
 
 setVolumeByRangeBar();
