@@ -200,26 +200,25 @@ function getMusicTime() {
     }
 }
 
+// 更新播放模式顯示
 function updatePlayModeDisplay() {
+    // 重置所有按鈕的活動狀態
     document.getElementById('loopBtn').classList.remove('active');
     document.getElementById('randomBtn').classList.remove('active');
     document.getElementById('repeatAllBtn').classList.remove('active');
     
+    // 根據當前模式更新顯示
     if (isLooping) {
         document.getElementById('loopBtn').classList.add('active');
-        playModeDiv.innerText = "單曲循環播放";
-        audio.loop = true;
+        document.getElementById('playMode').innerText = "單曲循環播放";
     } else if (isRandom) {
         document.getElementById('randomBtn').classList.add('active');
-        playModeDiv.innerText = "隨機播放";
-        audio.loop = false;
+        document.getElementById('playMode').innerText = "隨機播放";
     } else if (isRepeatAll) {
         document.getElementById('repeatAllBtn').classList.add('active');
-        playModeDiv.innerText = "全部循環播放";
-        audio.loop = false;
+        document.getElementById('playMode').innerText = "全部循環播放";
     } else {
-        playModeDiv.innerText = "正常播放";
-        audio.loop = false;
+        document.getElementById('playMode').innerText = "正常播放";
     }
 }
 
@@ -231,13 +230,18 @@ function getRandomIndex(currentIndex, max) {
     return newIndex;
 }
 
+// 修改播放模式切換函數
 function toggleLoop() {
     isLooping = !isLooping;
     if (isLooping) {
         isRandom = false;
         isRepeatAll = false;
+        audio.loop = true;
+    } else {
+        audio.loop = false;
     }
     updatePlayModeDisplay();
+    console.log('切換循環播放模式:', isLooping);
 }
 
 function toggleRandom() {
@@ -245,8 +249,10 @@ function toggleRandom() {
     if (isRandom) {
         isLooping = false;
         isRepeatAll = false;
+        audio.loop = false;
     }
     updatePlayModeDisplay();
+    console.log('切換隨機播放模式:', isRandom);
 }
 
 function toggleRepeatAll() {
@@ -254,18 +260,29 @@ function toggleRepeatAll() {
     if (isRepeatAll) {
         isLooping = false;
         isRandom = false;
+        audio.loop = false;
     }
     updatePlayModeDisplay();
+    console.log('切換全部循環模式:', isRepeatAll);
 }
 
+// 修改 musicStatus 函數
 function musicStatus() {
+    console.log('音樂播放結束，當前模式：', {
+        isLooping: isLooping,
+        isRandom: isRandom,
+        isRepeatAll: isRepeatAll
+    });
+
     if (isLooping) {
+        // 單曲循環
         audio.currentTime = 0;
         playMusic();
         return;
     }
     
     if (isRandom) {
+        // 隨機播放
         let randomIndex = getRandomIndex(musicList.selectedIndex, musicList.length);
         musicList.selectedIndex = randomIndex;
         changeMusic(0);
@@ -273,22 +290,31 @@ function musicStatus() {
     }
 
     if (isRepeatAll) {
+        // 全部循環播放
         if (musicList.selectedIndex === musicList.length - 1) {
+            // 如果是最後一首歌，返回第一首
             musicList.selectedIndex = 0;
         } else {
+            // 否則播放下一首
             musicList.selectedIndex++;
         }
         changeMusic(0);
+        return;
+    }
+
+    // 正常播放模式：播放到最後一首就停止
+    if (musicList.selectedIndex < musicList.length - 1) {
+        changeMusic(1);
     } else {
-        if (musicList.selectedIndex < musicList.length - 1) {
-            changeMusic(1);
-        } else {
-            stopMusic();
-        }
+        stopMusic();
     }
 }
 
-
+// 確保在音頻結束時觸發 musicStatus
+audio.addEventListener('ended', function() {
+    console.log('音頻播放結束');
+    musicStatus();
+});
 
 function setVolumeByRangeBar() {
     const volume = parseInt(volRangeBar.value);
@@ -419,11 +445,13 @@ function loadPlaybackState() {
 }
 
 
-// 修改切換音樂的函數
+// 確保在切換音樂時保持播放模式
 function changeMusic(n) {
     const playingBeforeChange = !audio.paused;
     
-    // 停止當前播放
+    // 保存當前的播放模式
+    const currentLoop = isLooping;
+    
     stopMusic();
     
     const currentIndex = musicList.selectedIndex;
@@ -433,17 +461,16 @@ function changeMusic(n) {
         musicList.selectedIndex = newIndex;
         const selectedOption = musicList.options[newIndex];
         
-        // 更新音源和標題
         audio.src = selectedOption.value;
         audio.title = selectedOption.text;
         
-        // 更新狀態顯示
         document.getElementById('statusInfo').innerText = "正在載入 " + selectedOption.text;
 
-        // 等待音頻加載完成
+        // 恢復播放模式
+        audio.loop = currentLoop;
+        
         audio.load();
         
-        // 如果之前正在播放，則繼續播放新的音樂
         if (playingBeforeChange) {
             audio.addEventListener('canplay', () => {
                 playMusic();
