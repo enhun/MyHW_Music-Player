@@ -38,22 +38,26 @@ body {
 }
 
 .title-bar {
-background-color: #000;
-color: #FF1493;
-padding: 10px;
-margin-bottom: 20px;
-border-radius: 5px;
-font-size: 1.2em;
-text-align: center;
-min-height: 1.5em; /* 添加最小高度避免文字切換時抖動 */
-font-family: "Microsoft JhengHei", Arial, sans-serif; /* 確保中文顯示正常 */
-text-shadow: 0 0 5px #DB7093; /* 添加發光效果 */
-transition: color 0.3s ease; /* 添加顏色過渡效果 */
+    background-color: #000;
+    color: #FF1493;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    min-height: 1.5em; /* 保持最小高度避免抖動 */
+    font-family: "Microsoft JhengHei", Arial, sans-serif;
+    text-shadow: 0 0 5px #DB7093;
+    transition: color 0.3s ease;
+    white-space: nowrap; /* 防止文字換行 */
+    overflow: hidden; /* 隱藏溢出文字 */
 }
 
+/* 添加滑鼠懸停效果 */
 .title-bar:hover {
-color: #f19fe0; /* 滑鼠移過時變白色 */
-text-shadow: 0 0 8px #DB7093; /* 加強發光效果 */
+    color: #ff69b4;
+    text-shadow: 0 0 8px #ff69b4;
 }
 
 #controlPanel span {
@@ -98,6 +102,22 @@ text-shadow: 0 0 8px #DB7093; /* 加強發光效果 */
     text-align: center;
     margin: 20px 0;
 }
+/* 控制按鈕的基本樣式 */
+.control-btn {
+    font-family: 'Webdings';  /* 使用 Webdings 字體來顯示播放器符號 */
+    width: 44px;
+    height: 44px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    margin: 2px;
+    transition: all 0.2s ease;
+}
 
 
 #controlPanel {
@@ -139,13 +159,68 @@ box-shadow: 0 0 10px #fff,
     cursor: pointer;
 }
 
-.volume-controls {
+
+/* 圓形按鈕樣式 */
+.circle-btn {
+    width: 30px;
+    height: 30px;
+    background-color: #ff99b6;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
+    color: white;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    box-shadow: 0 0 5px rgba(255, 153, 182, 0.5);
 }
+
+.circle-btn:hover {
+    background-color: #ff7fa1;
+}
+
+
+/* 音量滑動條樣式 */
+.volume-slider {
+    flex: 1;
+    max-width: 150px;
+    height: 4px;
+    background: #ddd;
+    -webkit-appearance: none;
+    border-radius: 2px;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #ff99b6;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* 音量文字框樣式 */
+.volume-text {
+    width: 40px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    color: #ff99b6;
+}
+
+/* 音量控制容器 */
+.volume-controls {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+
+
+
+
 
 #volumeControl {
     width: 200px;
@@ -323,3 +398,57 @@ visibility: hidden;
     border-radius: 5px;
 }
 
+/* 活動狀態的按鈕樣式 */
+.btn.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* 進度條和音量控制的觸控優化 */
+@media (hover: none) and (pointer: coarse) {
+    .form-range {
+        height: 30px;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* 小螢幕設備的按鈕間距調整 */
+@media (max-width: 576px) {
+    .gap-2 {
+        gap: 0.5rem!important;
+    }
+    
+    .btn {
+        padding: 0.4rem 0.8rem;
+    }
+}
+/* 響應式調整 */
+@media (max-width: 576px) {
+    .control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+
+.control-btn:hover {
+    background-color: #e9ecef;
+}
+
+/* 活動狀態樣式 */
+.control-btn.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+/* 靜音按鈕樣式 */
+#muteBtn.muted {
+    background-color: #dc3545;
+    color: white;
+}

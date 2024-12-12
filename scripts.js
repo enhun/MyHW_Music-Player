@@ -15,13 +15,23 @@ let isRepeatAll = false;
 let timeUpdateInterval;
 
 let progressSaveInterval;
+
+
+
+
+
+// 進度更新
 audio.addEventListener('timeupdate', updateProgress);
+
+// 音頻加載完成時的處理
 audio.addEventListener('loadedmetadata', () => {
     progressBar.max = audio.duration;
     progressBar.value = 0;
+    updateProgress();
     getMusicTime();
 });
 
+// 播放時開始定時保存進度
 audio.addEventListener('playing', () => {
     if (progressSaveInterval) {
         clearInterval(progressSaveInterval);
@@ -30,28 +40,22 @@ audio.addEventListener('playing', () => {
     progressSaveInterval = setInterval(savePlaybackState, 5000);
 });
 
+// 暫停時停止保存進度
 audio.addEventListener('pause', () => {
     if (progressSaveInterval) {
         clearInterval(progressSaveInterval);
     }
 });
 
-audio.addEventListener('timeupdate', () => {
-    updateProgress();
-});
-
-audio.addEventListener('loadedmetadata', () => {
-    updateProgress();
-    getMusicTime();
-});
-
+// 進度條變化時更新播放位置
 progressBar.addEventListener('change', () => {
     audio.currentTime = progressBar.value;
 });
 
+// 音量控制
 volRangeBar.addEventListener('input', setVolumeByRangeBar);
 
-const titleTexts = [
+let titleTexts = [
     "歡迎使用我的播放器",
     "❤️ 享受美好音樂時光 ❤️",
     "✨ enjoy learning ✨",
@@ -59,15 +63,24 @@ const titleTexts = [
     "讓我們一起聆聽動人旋律",
     "跟著德華一起飛吧"
 ];
-
 let titleIndex = 0;
 let titleChar = 0;
 let currentText = '';
 let isDeleting = false;
+let titleBar = null;
+let timeoutId = null;  // 新增變量來存儲 timeout ID
 
 function typeTitle() {
-    const i = titleIndex % titleTexts.length;
-    const fullText = titleTexts[i];
+    // 確保 titleBar 元素存在
+    if (!titleBar) {
+        titleBar = document.getElementById('titleBar');
+        if (!titleBar) {
+            console.error('找不到 titleBar 元素');
+            return;
+        }
+    }
+
+    const fullText = titleTexts[titleIndex % titleTexts.length];
 
     if (isDeleting) {
         currentText = fullText.substring(0, titleChar--);
@@ -75,7 +88,7 @@ function typeTitle() {
         currentText = fullText.substring(0, ++titleChar);
     }
 
-    document.getElementById('titleBar').textContent = currentText;
+    titleBar.textContent = currentText;
 
     let typeSpeed = isDeleting ? 50 : 150;
 
@@ -89,13 +102,66 @@ function typeTitle() {
         typeSpeed = 500;
     }
 
-    setTimeout(typeTitle, typeSpeed);
+    // 清除之前的 timeout
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+    }
+
+    // 設置新的 timeout
+    timeoutId = setTimeout(() => {
+        requestAnimationFrame(typeTitle);
+    }, typeSpeed);
 }
 
+// 當頁面加載完成時初始化
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM 載入完成，開始初始化跑馬燈');
+    titleBar = document.getElementById('titleBar');
+    if (titleBar) {
+        console.log('找到 titleBar 元素，開始執行跑馬燈');
+        // 清除任何可能存在的舊 timeout
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        // 重置所有狀態
+        titleIndex = 0;
+        titleChar = 0;
+        currentText = '';
+        isDeleting = false;
+        // 開始新的動畫
+        typeTitle();
+    } else {
+        console.error('找不到 titleBar 元素');
+    }
+});
+
+// 清理函數 - 在需要停止動畫時調用
+function cleanup() {
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+    }
+}
+
+// 在頁面卸載時清理
+window.addEventListener('unload', cleanup);
+
+
+const originalOnload = window.onload;
+// 重新定義 window.onload
+
+
+// 移除 window.onload 中的 typeTitle() 調用
 window.onload = function() {
-    setVolumeByRangeBar();
-    typeTitle();
+    // 執行原本的 onload 函數
+    if (originalOnload) {
+        originalOnload();
+    }
     
+    // 初始化音量控制
+    setVolumeByRangeBar();
+    
+    // 載入播放狀態
     const savedState = loadPlaybackState();
     if (savedState) {
         audio.src = savedState.currentSong;
@@ -104,7 +170,8 @@ window.onload = function() {
         musicList.selectedIndex = savedState.selectedIndex;
         getMusicTime();
     }
-}
+};
+
 
 function updateProgress() {
     if (!isNaN(audio.duration)) {
