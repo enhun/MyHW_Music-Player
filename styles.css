@@ -142,63 +142,39 @@ box-shadow: 0 0 10px #fff,
 .progress-container {
     width: 100%;
     padding: 20px;
-    position: relative;
 }
 
 .flower-slider {
     width: 100%;
-    height: 20px;
-    margin: 30px 0;
-    appearance: none;
+    height: 20px;  /* 增加了基礎高度 */
+    margin: 30px 0;  /* 增加邊距來容納更大的花朵 */
     -webkit-appearance: none;
-    background: rgba(0, 0, 0, 0.1);
+    background: #f0f0f0;
+    border-radius: 10px;
     cursor: pointer;
 }
 
-/* Chrome, Safari */
 .flower-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 50px;
     height: 50px;
-    background: url('images/flower1.png') center/cover no-repeat; 
+    background: url('images/flower1.png') center/cover no-repeat;  /* 替換成你的圖片路徑 */
     cursor: pointer;
     transition: transform 0.2s;
     margin-top: -15px;
 }
 
-
-/* Firefox */
-.flower-slider::-moz-range-thumb {
-    width: 50px;
-    height: 50px;
-    background: url('images/flower1.png') center/cover no-repeat; 
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
 .flower-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
+    transform: scale(1.2);  /* 增加懸停時的放大效果 */
 }
 
 .flower-slider::-webkit-slider-runnable-track {
     width: 100%;
-    height: 20px;
+    height: 20px;  /* 增加軌道高度 */
     background: #333;
     border-radius: 10px;
 }
 
-.flower-slider::-moz-range-track {
-    width: 100%;
-    height: 20px;
-    background: #333;
-    border-radius: 10px;
-}
-
-/* 移除 Bootstrap 的默認樣式 */
-.flower-slider:focus {
-    outline: none;
-    box-shadow: none;
-}
 
 
 
@@ -493,10 +469,4 @@ visibility: hidden;
 #muteBtn.muted {
     background-color: #dc3545;
     color: white;
-}
-
-@-moz-document url-prefix() {
-    .flower-slider::-moz-range-thumb {
-        margin-top: -15px; /* 根据需要调整 */
-    }
 }

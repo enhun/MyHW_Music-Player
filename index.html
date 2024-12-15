@@ -20,25 +20,21 @@
         
             <div class="row mb-3">
                 <div class="col-12">
-                     <audio id="audio" src="music/Der greise kopt.mp3" title="Der greise kopt" controls onended="musicStatus()" class="w-100"></audio>
+            <audio id="audio" src="music/Der greise kopt.mp3.mp3" title="Der greise kopt" controls onended="musicStatus()" class="w-100"></audio>
+
                 </div>
             </div>
         
      <!-- 歌曲選擇 -->
-   
-           
-
      <div class="row mb-3">
         <div class="col-12">
-        
-            <select onchange="changeMusic(0)">
-                <option value="music/Der greise kopt.mp3"> Der greise kopt</option>
+          <select onchange="changeMusic(0)">
+                <option value="music/Der greise kopt.mp3">Der greise kopt</option>
                 <option value="music/Arabesque No. 1. Andantino con moto.mp3">Arabesque No. 1. Andantino con moto</option>
                 <option value="music/Debussy, Claude - Ariettes Oubliees - III.mp3">Debussy, Claude - Ariettes Oubliees - III</option>
                 <option value="music/Symphony No. 3 in E Flat Major Eroica, Op. 55 - II.mp3">Symphony No. 3 in E Flat Major Eroica, Op. 55 - II</option>
                 <option value="music/Ave Maria, D. 839.mp3">Ave Maria, D. 839</option>
             </select>
-        
         </div>
     </div>
 
@@ -70,7 +66,7 @@
     </div>
 
  <!-- 進度條 -->
-<div class="row mb-4"> <!-- 增加下方邊距 -->
+ <div class="row mb-3">
     <div class="col-12">
         <div class="progress-container">
             <input type="range" class="flower-slider" id="progressBar" value="0" min="0" max="100" step="0.1">
