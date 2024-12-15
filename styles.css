@@ -46,12 +46,20 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     text-align: center;
-    min-height: 1.5em; /* 保持最小高度避免抖動 */
+    height: 60px; /* 設定固定高度 */
+    width: 100%; /* 設定寬度 */
     font-family: "Microsoft JhengHei", Arial, sans-serif;
     text-shadow: 0 0 5px #DB7093;
     transition: color 0.3s ease;
-    white-space: nowrap; /* 防止文字換行 */
-    overflow: hidden; /* 隱藏溢出文字 */
+    white-space: nowrap;
+    overflow: hidden;
+    
+    /* 新增以下屬性 */
+    display: flex;
+    align-items: center; /* 垂直置中 */
+    justify-content: center; /* 水平置中 */
+    box-sizing: border-box; /* 確保 padding 不會影響整體大小 */
+    position: relative; /* 為子元素定位提供參考 */
 }
 
 /* 添加滑鼠懸停效果 */
